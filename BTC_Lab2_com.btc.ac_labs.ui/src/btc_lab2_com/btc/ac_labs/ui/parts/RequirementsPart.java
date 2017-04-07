@@ -1,7 +1,9 @@
 package btc_lab2_com.btc.ac_labs.ui.parts;
 
 import javax.annotation.PostConstruct;
+import javax.swing.JOptionPane;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -12,6 +14,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 public class RequirementsPart {
@@ -20,11 +23,16 @@ public class RequirementsPart {
 	private int requirement_index=0;
 	private Label labelName;
 	private Label labelDescription;
+	private Label labelLongDescription;
 	private Label displaybox;
+	private Label labelCreator;
 	private Text textName;
-	private Text textDescription;
+	private Text textShortDescription;
+	private Text textLongDescription;
+	private Text textCreator;
 	private Text textDisplayBox;
 	private Button addButton;
+	private Button SearchandDisplay;
 	private Button displayall;
 	private Button prev;
 	private Button next;
@@ -47,28 +55,61 @@ public class RequirementsPart {
 			@Override
 			public void modifyText(ModifyEvent e) {
 				
-					if(textName.getText().equals("") || textDescription.getText().equals(""))
-						addButton.setEnabled(false);
-					else
-						addButton.setEnabled(true);
+				if(textName.getText().equals("") || textShortDescription.getText().equals("") || textLongDescription.getText().equals("") || textCreator.getText().equals(""))
+					addButton.setEnabled(false);
+				else
+					addButton.setEnabled(true);
 				
 			}
 		});
 		
 		labelDescription = new Label(parent,SWT.BORDER);
-		labelDescription.setText("Description: ");
+		labelDescription.setText("Short Description: ");
 	
-		textDescription = new Text(parent, SWT.BORDER);
-		textDescription.setLayoutData(dataHorizontalFill);
-		textDescription.addModifyListener(new ModifyListener() {
+		textShortDescription = new Text(parent, SWT.BORDER);
+		textShortDescription.setLayoutData(dataHorizontalFill);
+		textShortDescription.addModifyListener(new ModifyListener() {
 			
 			@Override
 			public void modifyText(ModifyEvent e) {
-				if(textDescription.getText().equals("") || textName.getText().equals(""))
+				if(textName.getText().equals("") || textShortDescription.getText().equals("") || textLongDescription.getText().equals("") || textCreator.getText().equals(""))
 					addButton.setEnabled(false);
 				else
 					addButton.setEnabled(true);
 				
+			}
+		});
+		
+		labelLongDescription=new Label(parent,SWT.BORDER);
+		labelLongDescription.setText("Long Description: ");
+		
+		textLongDescription=new Text(parent,SWT.BORDER);
+		textLongDescription.setLayoutData(dataHorizontalFill);
+		textLongDescription.addModifyListener(new ModifyListener() {
+			
+			@Override
+			public void modifyText(ModifyEvent e) {
+				if(textName.getText().equals("") || textShortDescription.getText().equals("") || textLongDescription.getText().equals("") || textCreator.getText().equals(""))
+					addButton.setEnabled(false);
+				else
+					addButton.setEnabled(true);
+				
+			}
+		});
+		
+		labelCreator=new Label(parent,SWT.BORDER);
+		labelCreator.setText("Creator: ");
+		
+		textCreator=new Text(parent,SWT.BORDER);
+		textCreator.setLayoutData(dataHorizontalFill);
+		textCreator.addModifyListener(new ModifyListener() {
+			
+			@Override
+			public void modifyText(ModifyEvent e) {
+				if(textName.getText().equals("") || textShortDescription.getText().equals("") || textLongDescription.getText().equals("") || textCreator.getText().equals(""))
+					addButton.setEnabled(false);
+				else
+					addButton.setEnabled(true);
 			}
 		});
 		
@@ -81,15 +122,48 @@ public class RequirementsPart {
 			public void widgetSelected(SelectionEvent e) {
 				
 				if(nrofrequirements<listofrequirements.length){
-					listofrequirements[nrofrequirements]=new Requirements(textName.getText(),textDescription.getText());
+					listofrequirements[nrofrequirements]=new Requirements(textName.getText(),textShortDescription.getText(),textLongDescription.getText(),textCreator.getText());
 					requirement_index=nrofrequirements;
 					nrofrequirements++;
 				}
-				if(requirement_index>0)
+				
+				if(requirement_index>0){
 					prev.setEnabled(true);
+				}
+				
+				if(nrofrequirements>0)
+					SearchandDisplay.setEnabled(true);
 				
 
 				
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		SearchandDisplay=new Button(parent,SWT.BORDER);
+		SearchandDisplay.setText("Search and Display: ");
+		SearchandDisplay.setEnabled(false);
+		SearchandDisplay.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				int check=1;
+				String tmp=new JOptionPane().showInputDialog("Input name/short Description/long Description/Creator");
+				for(int i=0;i<nrofrequirements;i++)
+				{
+					if((listofrequirements[i].getName()).equals(tmp) || listofrequirements[i].getShortDescription().equals(tmp) || listofrequirements[i].getLongDescription().equals(tmp) || listofrequirements[i].getCreator().equals(tmp)){
+						textDisplayBox.setText("Name: " +listofrequirements[i].getName()+ "\n" + "ShortDescription: " +listofrequirements[i].getShortDescription() +"\n" + "Long Description: " + listofrequirements[i].getLongDescription() + "\n" + "Creator: " + listofrequirements[i].getCreator() + "\n" + "Creation Date: "+ listofrequirements[i].getCreationDate());
+						check=0;}
+				}
+				if(check==1){
+					Shell shell=new Shell();
+					MessageDialog.openError(shell, "Requirement Search", "Requirement not found!");
+				}
 			}
 			
 			@Override
@@ -111,7 +185,7 @@ public class RequirementsPart {
 				{
 				String tmp="";
 				for(int i=0;i<nrofrequirements;i++)
-						tmp+=listofrequirements[i].getName()+ ":" +listofrequirements[i].getDescription() +"\n";
+						tmp+=(i+1)+". " + "Name: " +listofrequirements[i].getName()+ "\n" + "ShortDescription: " +listofrequirements[i].getShortDescription() +"\n" + "Long Description: " + listofrequirements[i].getLongDescription() + "\n" + "Creator: " + listofrequirements[i].getCreator() + "\n" + "Creation Date: "+ listofrequirements[i].getCreationDate()+ "\n";
 						textDisplayBox.setText(tmp);
 				}
 				
@@ -134,7 +208,9 @@ public class RequirementsPart {
 	
 				requirement_index--;
 				textName.setText(listofrequirements[requirement_index].getName());
-				textDescription.setText(listofrequirements[requirement_index].getDescription());
+				textShortDescription.setText(listofrequirements[requirement_index].getShortDescription());
+				textLongDescription.setText(listofrequirements[requirement_index].getLongDescription());
+				textCreator.setText(listofrequirements[requirement_index].getCreator());
 				
 				if(requirement_index==0)
 					prev.setEnabled(false);
@@ -160,8 +236,10 @@ public class RequirementsPart {
 				requirement_index++;
 	
 				textName.setText(listofrequirements[requirement_index].getName());
-				textDescription.setText(listofrequirements[requirement_index].getDescription());
-				
+				textShortDescription.setText(listofrequirements[requirement_index].getShortDescription());
+				textLongDescription.setText(listofrequirements[requirement_index].getLongDescription());
+				textCreator.setText(listofrequirements[requirement_index].getCreator());
+					
 				prev.setEnabled(true);
 				if(requirement_index== (nrofrequirements-1))
 					next.setEnabled(false);
